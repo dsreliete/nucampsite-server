@@ -13,7 +13,7 @@ const partnerRouter = require('./routes/partnerRouter');
 
 const mongoose = require('mongoose');
 
-const url = 'mongodb://localhost:27017/nucampsite';
+const url = 'mongodb://mongo:27017/docker-node-mongo';
 const connect = mongoose.connect(url, {
     useCreateIndex: true,
     useFindAndModify: false,
@@ -21,7 +21,7 @@ const connect = mongoose.connect(url, {
     useUnifiedTopology: true
 });
 
-connect.then(() => console.log('Connected correctly to server'), 
+connect.then(() => console.log('Connected correctly to server \o/'), 
     err => console.log(err)
 );
 
