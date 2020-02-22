@@ -1,27 +1,40 @@
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const JwtStrategy = require('passport-jwt').Strategy;
+//provide methods to local strategy to passport plugin
+const LocalStrategy = require('passport-local').Strategy; 
+//provide strategy for passport-jwt plugin base authentication
+const JwtStrategy = require('passport-jwt').Strategy; 
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 const config = require('./config.js');
 const User = require('./models/user');
 
+//handle authentication with username/password stored on server:
+//local strategy is passed to passport.use method with verifyFuction from userSchema linked 
+//to passportLocalMongoose:User.authenticate method
 exports.local = passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// Token has: header with token type and algorithm
+// payload with info that helps identify user, example userid
+// signature garantee message authencity
 exports.getToken = function(user) {
     return jwt.sign(user, config.secretKey, {expiresIn: 3600});
 };
 
+//config to passport-jwt strategies
 const opts = {};
+// the client will send JWT token in Authorization Header as a Bearer Token. 
+// The Passport JWT Strategy supports many other ways of getting the token from requests.
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = config.secretKey;
 
+//pass JWTstartegy to passport with options and verifyFunction
 exports.jwtPassport = passport.use(
     new JwtStrategy(
         opts,
+        //decoded JWT payload and a passport callback 
         (jwt_payload, done) => {
             console.log('JWT payload:', jwt_payload);
             User.findOne({_id: jwt_payload._id}, (err, user) => {
@@ -37,4 +50,5 @@ exports.jwtPassport = passport.use(
     )
 );
 
+//provide user authentication with jwt strategy and no sessions
 exports.verifyUser = passport.authenticate('jwt', {session: false});

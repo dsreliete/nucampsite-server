@@ -8,7 +8,7 @@ const userSchema = new Schema({
         default: false
     }
 });
-
+// plugin automatically handle username/password for storage in db
 userSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model('User', userSchema);
