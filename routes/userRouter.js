@@ -6,8 +6,24 @@ const authenticate = require('../authenticate');
 
 const userRouter = express.Router();
 
-userRouter.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+userRouter.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
+  User.find()
+  .then(users => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json(users);
+  })
+  .catch(err => next(err));
+});
+
+userRouter.get('/test', function(req, res, next) {
+  User.find()
+  .then(users => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json(users);
+  })
+  .catch(err => next(err));
 });
 
 userRouter.post('/signup', (req, res) => {
@@ -25,6 +41,9 @@ userRouter.post('/signup', (req, res) => {
             }
             if (req.body.lastname) {
               user.lastname = req.body.lastname;
+            }
+            if (req.body.admin) {
+              user.admin = req.body.admin;
             }
             user.save(err => {
                 if (err) {
