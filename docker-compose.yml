@@ -1,13 +1,21 @@
 version: '3'
 services:
   app:
+    container_name: 'nucamp-server'
     restart: always
     build: .
     ports:
       - '80:3000'
   mongo:
+    container_name: 'nucamp-mongo'
     image: mongo
+    environment:
+      MONGO_INITDB_DATABASE: nucampsite
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
     ports:
       - '27017:27017'
     volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - ./mongo-data:/data/db
+      - ./mongo-data_config:/data/configdb
