@@ -3,10 +3,11 @@ const passport = require('passport');
 
 const User = require('../models/user');
 const authenticate = require('../authenticate');
+const cors = require('./cors');
 
 const userRouter = express.Router();
 
-userRouter.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
+userRouter.get('/', cors.cors, authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
   User.find()
   .then(users => {
     res.statusCode = 200;
@@ -16,7 +17,7 @@ userRouter.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function(
   .catch(err => next(err));
 });
 
-userRouter.get('/test', function(req, res, next) {
+userRouter.get('/test', cors.corsWithOptions, function(req, res, next) {
   User.find()
   .then(users => {
     res.statusCode = 200;
@@ -24,9 +25,9 @@ userRouter.get('/test', function(req, res, next) {
     res.json(users);
   })
   .catch(err => next(err));
-});
+})
 
-userRouter.post('/signup', (req, res) => {
+userRouter.post('/signup', cors.corsWithOptions, (req, res) => {
   //static method from passpot-local-mongoose to register username and pswd
   User.register(new User({username: req.body.username}),
       req.body.password,
@@ -67,7 +68,7 @@ userRouter.post('/signup', (req, res) => {
 //passport.autenticate method is a second middleware used to authenticate a username and password,
 // given from passport-local 
 // If success return a user on request object with info about the user and pass to next middleware. 
-userRouter.post('/login', passport.authenticate('local'), (req, res) => {
+userRouter.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res) => {
   //get token from req.user and pass response
   const token = authenticate.getToken({_id: req.user._id});
   res.statusCode = 200;
@@ -75,7 +76,7 @@ userRouter.post('/login', passport.authenticate('local'), (req, res) => {
   res.json({success: true, token: token, status: 'You are successfully logged in!'});
 });
 
-userRouter.get('/logout', (req, res, next) => {
+userRouter.get('/logout', cors.corsWithOptions, (req, res, next) => {
   res.redirect('/');
 });
 
