@@ -82,7 +82,8 @@ favoriteRouter.route('/')
 favoriteRouter.route('/:campsiteId')
 .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
 .get(cors.cors, (req, res, next) => {
-
+    res.statusCode = 403;
+    res.end(`GET operation not supported on /favorites/${req.params.campsiteId}`);
 })
 .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
 
