@@ -22,7 +22,7 @@ favoriteRouter.route('/')
     })
     .catch(err => next(err));
 })
-.post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Favorite.findOne({'user': req.user._id})
     .then(campsite => {
         if(campsite){
@@ -59,7 +59,7 @@ favoriteRouter.route('/')
     res.statusCode = 403;
     res.end('PUT operation not supported on /favorites');
 })
-.delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Favorite.findOne({'user': req.user._id})
     .then(campsite => {
         if(campsite){
